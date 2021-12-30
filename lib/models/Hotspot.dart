@@ -7,6 +7,30 @@ import 'dart:convert';
 import 'geocode.dart';
 import 'status.dart';
 
+class HotspotResponse {
+  HotspotResponse({
+    required this.hotspot,
+  });
+
+  Hotspot hotspot;
+
+  HotspotResponse copyWith({
+    required Hotspot hotspot,
+  }) =>
+      HotspotResponse(
+        hotspot: hotspot,
+      );
+
+  factory HotspotResponse.fromJson(Map<String, dynamic> json) =>
+      HotspotResponse(
+        hotspot: Hotspot.fromJson(json["data"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "hotspot": hotspot.toJson(),
+      };
+}
+
 class Hotspot {
   Hotspot({
     required this.timestampAdded,
