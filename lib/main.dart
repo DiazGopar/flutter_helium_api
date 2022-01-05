@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_helium_api/provider/hotspot_provider.dart';
 
 import 'models/hotspot.dart';
+import 'models/coordinate_square.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,13 +38,33 @@ class _MyHomePageState extends State<MyHomePage> {
   var hotSpotClient = HotSpotClient();
 
   void _incrementCounter() async {
-    Hotspot? hotspot = await hotSpotClient.getHotSpotbyAddress(
-        hostAddress: "11vWtU1jApHC5b1pfR2ywTZ6bYqNSuuUPGNuFanhHTJGk6cM12V");
-    // ignore: avoid_print
-    print(hotspot?.name);
+    //Hotspot? hotspot;
+    List<Hotspot> hotspotList = [];
+    try {
+      //hotspot = await hotSpotClient.getHotSpotbyAddress(
+      //    hostAddress: "11vWtU1jApHC5b1pfR2ywTZ6bYqNSuuUPGNuFanhHTJGk6cM12V");
+      //hotspotList =
+      //    await hotSpotClient.getHotSpotsbyName(name: "rare-plum-griffin");
+      // ignore: avoid_print
+      hotspotList = await hotSpotClient.getHotSpotsbyCoordinatesSquared(
+          coordinatesquare: CoordinateSquare(
+              southwesternlat: 27.964542,
+              southwesternlong: -16.960667,
+              northeasternlat: 28.622006,
+              northeasternlong: -16.117619));
+    } catch (e) {
+      // ignore: avoid_print
+      print(e);
+    }
+
     setState(() {
       _counter++;
-      _hotspotname = hotspot!.name;
+      _hotspotname = "";
+      _hotspotname = hotspotList.length.toString();
+      //for (var hotspot in hotspotList) {
+      //  _hotspotname += hotspot.address + ' ';
+      //}
+      //_hotspotname = hotspot?.name ?? "None";
     });
   }
 

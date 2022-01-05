@@ -31,8 +31,40 @@ class HotspotResponse {
       };
 }
 
+class ListHotspotResponse {
+  ListHotspotResponse({
+    required this.data,
+    this.cursor = "",
+  });
+
+  String cursor;
+  List<Hotspot> data;
+
+  ListHotspotResponse copyWith({
+    required List<Hotspot> data,
+    String cursor = "",
+  }) =>
+      ListHotspotResponse(
+        data: data,
+        cursor: cursor,
+      );
+
+  factory ListHotspotResponse.fromJson(Map<String, dynamic> json) =>
+      ListHotspotResponse(
+        data: List<Hotspot>.from(json["data"].map((x) => Hotspot.fromJson(x))),
+        cursor: json["cursor"] ?? "",
+      );
+
+  Map<String, dynamic> toJson() => {
+        "data": List<dynamic>.from(data.map((x) => x.toJson())),
+        "cursor": cursor,
+      };
+}
+
 class Hotspot {
   Hotspot({
+    required this.lng,
+    required this.lat,
     required this.timestampAdded,
     required this.status,
     required this.rewardScale,
@@ -53,6 +85,8 @@ class Hotspot {
     required this.address,
   });
 
+  final double lng;
+  final double lat;
   final DateTime timestampAdded;
   final Status status;
   final dynamic rewardScale;
@@ -73,6 +107,8 @@ class Hotspot {
   final String address;
 
   Hotspot copyWith({
+    required double lng,
+    required double lat,
     required DateTime timestampAdded,
     required Status status,
     dynamic rewardScale,
@@ -93,6 +129,8 @@ class Hotspot {
     required String address,
   }) =>
       Hotspot(
+        lng: this.lng,
+        lat: this.lat,
         timestampAdded: this.timestampAdded,
         status: this.status,
         rewardScale: rewardScale ?? this.rewardScale,
@@ -118,6 +156,8 @@ class Hotspot {
   String toRawJson() => json.encode(toJson());
 
   factory Hotspot.fromJson(Map<String, dynamic> json) => Hotspot(
+        lng: json["lng"].toDouble(),
+        lat: json["lat"].toDouble(),
         timestampAdded: DateTime.parse(json["timestamp_added"]),
         status: Status.fromJson(json["status"]),
         rewardScale: json["reward_scale"],
@@ -139,6 +179,8 @@ class Hotspot {
       );
 
   Map<String, dynamic> toJson() => {
+        "lng": lng,
+        "lat": lat,
         "timestamp_added": timestampAdded.toIso8601String(),
         "status": status.toJson(),
         "reward_scale": rewardScale,
