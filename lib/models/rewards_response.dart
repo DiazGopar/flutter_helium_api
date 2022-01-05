@@ -27,7 +27,7 @@ class RewardsResponse {
   factory RewardsResponse.fromJson(Map<String, dynamic> json) =>
       RewardsResponse(
         data: List<Reward>.from(json["data"].map((x) => Reward.fromJson(x))),
-        cursor: json["cursor"],
+        cursor: json["cursor"] ?? "",
       );
 
   Map<String, dynamic> toJson() => {

@@ -15,16 +15,21 @@ class HotSpotRewardClient {
     _dio.interceptors.add(LoggingInterceptor());
   }
 
-  Future<Reward> getHotSpotRewardsbyAddress(
+  Future<List<Reward>> getHotSpotRewardsbyAddress(
       {required String hostAddress}) async {
+    List<Reward> rewards = <Reward>[];
     try {
       Response response = await _dio.get("/v1/hotspots/$hostAddress/rewards");
       RewardsResponse hotspotRewardResponse =
           RewardsResponse.fromJson(response.data);
-      hotspotRewardResponse.cursor hotspot = hotspotResponse.hotspot;
+      rewards.addAll(hotspotRewardResponse.data);
+      while (hotspotRewardResponse.cursor != "") {
+        hotspotRewardResponse = RewardsResponse.fromJson(response.data);
+        rewards.addAll(hotspotRewardResponse.data);
+      }
     } on DioError {
       rethrow;
     }
-    return hotspot;
+    return rewards;
   }
 }
