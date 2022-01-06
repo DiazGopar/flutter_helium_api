@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_helium_api/provider/hotspot_provider.dart';
 import 'package:flutter_helium_api/provider/hotspot_reward_provider.dart';
+import 'package:flutter_helium_api/views/rewards_view_page.dart';
+import 'package:get/get.dart';
 
 import 'models/hotspot.dart';
 import 'models/coordinate_square.dart';
@@ -15,12 +17,33 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
+    return GetMaterialApp(
+      initialRoute: '/',
+      getPages: [
+        GetPage(
+          name: '/',
+          page: () => const MyHomePage(title: 'Flutter Demo Home Page'),
+        ),
+        GetPage(
+          name: '/rewardsview/',
+          page: () => const RewardsViewPage(),
+        ),
+        /* //You can define a different page for routes with arguments, and another without arguments, but for that you must use the slash '/' on the route that will not receive arguments as above.
+       GetPage(
+        name: '/profile/:user',
+        page: () => UserProfile(),
+      ),
+      GetPage(
+        name: '/third',
+        page: () => Third(),
+        transition: Transition.cupertino  
+      ),*/
+      ],
+      title: 'Helium Rewards Explorer',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Helium Rewards Home Page'),
     );
   }
 }
@@ -38,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   String _hotspotname = "";
   String _hotspotrewards = "";
+  double _amount = 0;
   var hotSpotClient = HotSpotClient();
   var hotspotRewardClient = HotSpotRewardClient();
 
@@ -62,17 +86,23 @@ class _MyHomePageState extends State<MyHomePage> {
       print(e);
     }
 
-    rewards = await hotspotRewardClient.getHotSpotRewardsbyAddress(
-        hostAddress: "11vWtU1jApHC5b1pfR2ywTZ6bYqNSuuUPGNuFanhHTJGk6cM12V");
+    rewards =
+        await hotspotRewardClient.getHotSpotRewardsbyAddressAndTimeInterval(
+      hostAddress: "11vWtU1jApHC5b1pfR2ywTZ6bYqNSuuUPGNuFanhHTJGk6cM12V",
+      firstTime: DateTime.now().subtract(const Duration(days: 30)),
+      lastTime: DateTime.now(),
+    );
 
     setState(() {
       _counter++;
       _hotspotname = "";
-      _hotspotname = hotspotList.length.toString();
+      _hotspotname = rewards.length.toString();
       _hotspotrewards = "";
+      _amount = 0;
       for (var reward in rewards) {
-        _hotspotrewards += reward.amount.toString();
+        _amount += reward.amount;
       }
+      _hotspotrewards = (_amount / 100000000).toStringAsFixed(2);
       //for (var hotspot in hotspotList) {
       //  _hotspotname += hotspot.address + ' ';
       //}
@@ -85,6 +115,35 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Drawer Header'),
+            ),
+            ListTile(
+              title: const Text('Rewards'),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+                Get.toNamed('/rewardsview');
+              },
+            ),
+            ListTile(
+              title: const Text('Item 2'),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+              },
+            ),
+          ],
+        ),
       ),
       body: Center(
         child: Column(
@@ -103,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               _hotspotrewards,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.bodyText1,
             ),
           ],
         ),

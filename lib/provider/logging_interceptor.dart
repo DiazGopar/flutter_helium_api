@@ -4,7 +4,8 @@ class LoggingInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     // ignore: avoid_print
-    print('REQUEST[${options.method}] => PATH: ${options.path}');
+    print(
+        'REQUEST[${options.method}] => PATH: ${options.path} ${options.queryParameters} ${options.uri}');
     return super.onRequest(options, handler);
   }
 
