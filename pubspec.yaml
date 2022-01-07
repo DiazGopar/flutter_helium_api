@@ -36,6 +36,7 @@ dependencies:
   dio: ^4.0.4
   intl: ^0.17.0
   get:
+  universe: ^1.1.2-nullsafety
   
 dev_dependencies:
   flutter_test:

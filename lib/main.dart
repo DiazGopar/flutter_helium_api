@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_helium_api/provider/hotspot_provider.dart';
 import 'package:flutter_helium_api/provider/hotspot_reward_provider.dart';
+import 'package:flutter_helium_api/views/map_view_page.dart';
 import 'package:flutter_helium_api/views/rewards_view_page.dart';
 import 'package:get/get.dart';
 
@@ -28,12 +29,12 @@ class MyApp extends StatelessWidget {
           name: '/rewardsview/',
           page: () => const RewardsViewPage(),
         ),
-        /* //You can define a different page for routes with arguments, and another without arguments, but for that you must use the slash '/' on the route that will not receive arguments as above.
-       GetPage(
-        name: '/profile/:user',
-        page: () => UserProfile(),
-      ),
-      GetPage(
+        //You can define a different page for routes with arguments, and another without arguments, but for that you must use the slash '/' on the route that will not receive arguments as above.
+        GetPage(
+          name: '/mapview/',
+          page: () => const MapViewPage(),
+        ),
+        /*GetPage(
         name: '/third',
         page: () => Third(),
         transition: Transition.cupertino  
@@ -136,10 +137,11 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
-              title: const Text('Item 2'),
+              title: const Text('Map'),
               onTap: () {
                 // Update the state of the app.
                 // ...
+                Get.toNamed('/mapview');
               },
             ),
           ],
