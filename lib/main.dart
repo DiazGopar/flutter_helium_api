@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         //You can define a different page for routes with arguments, and another without arguments, but for that you must use the slash '/' on the route that will not receive arguments as above.
         GetPage(
           name: '/mapview/',
-          page: () => const MapViewPage(),
+          page: () => MapViewPage(),
         ),
         /*GetPage(
         name: '/third',
