@@ -1,9 +1,32 @@
 import 'dart:core';
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import "package:flutter_helium_api/models/hotspot.dart";
 import "package:flutter_helium_api/models/coordinate_square.dart";
 
 import 'logging_interceptor.dart';
+
+class WebClient {
+  final Dio _dio = Dio();
+  double _percentage = 0.0;
+
+  //Stream<double> _percentageStream;
+
+  WebClient() {
+    _dio.options.baseUrl = "https://api.helium.io";
+    _dio.options.connectTimeout = 5000;
+    _dio.options.receiveTimeout = 3000;
+    _dio.options.headers['User-Agent'] = "HeliumGoparExplorer";
+    _dio.interceptors.add(LoggingInterceptor());
+  }
+
+  Future<Response<dynamic>> get(String url) async {
+    return _dio.get(url,
+        // ignore: avoid_print
+        onReceiveProgress: (received, total) => print(
+            'progress: ${(received / total * 100).toStringAsFixed(0)}% ($received/$total)'));
+  }
+}
 
 class HotSpotClient {
   final Dio _dio = Dio();

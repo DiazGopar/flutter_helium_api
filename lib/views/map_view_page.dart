@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_helium_api/controllers/map_controller.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapViewPage extends StatelessWidget {
-  static final MapController _mapController = MapRxController().mapcontroller;
+  final MapController _mapController = MapController();
   bool isMapRead = false;
 
-  MapViewPage({Key? key}) : super(key: key) {
-    // create instance only not exists another reference
-    //_mapController ??= MapRxController().mapcontroller;
-    // after onReady, flag local control variable
-    _mapController.onReady.then((v) {
-      isMapRead = v != null;
-    });
+  MapViewPage({Key? key}) : super(key: key);
+
+  void _onPositionChanged(MapPosition mapPosition, bool isMapRead) {
+    // ignore: avoid_print
+    print("onPositionChanged: " +
+        mapPosition.bounds!.southWest.toString() +
+        " " +
+        mapPosition.bounds!.northEast.toString() +
+        " " +
+        isMapRead.toString());
+  }
+
+  void _onMapCreated(MapController mapController) {
+    // ignore: avoid_print
+    print("onMapCreated: " + mapController.toString());
   }
 
   @override
@@ -27,6 +34,8 @@ class MapViewPage extends StatelessWidget {
         options: MapOptions(
           center: LatLng(27.964542, -16.960667),
           zoom: 8.0,
+          onMapCreated: (m) => _onMapCreated(m),
+          onPositionChanged: (m, b) => _onPositionChanged(m, b),
         ),
         layers: [
           TileLayerOptions(
@@ -37,7 +46,16 @@ class MapViewPage extends StatelessWidget {
             },
           ),
           MarkerLayerOptions(
-            markers: [],
+            markers: [
+              Marker(
+                point: LatLng(28.488809, -16.319809),
+                builder: (context) => const Icon(
+                  Icons.signal_cellular_alt,
+                  size: 30,
+                  color: Colors.blueAccent,
+                ),
+              )
+            ],
           ),
         ],
       ),

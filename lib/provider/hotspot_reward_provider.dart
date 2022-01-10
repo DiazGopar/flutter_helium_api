@@ -25,13 +25,13 @@ class HotSpotRewardClient {
   }) async {
     List<Reward> rewards = <Reward>[];
     try {
-      Response response = await _dio.get(
-        "/v1/hotspots/$hostAddress/rewards",
-        queryParameters: {
-          'max_time': _formatter.format(lastTime),
-          'min_time': _formatter.format(firstTime),
-        },
-      );
+      Response response = await _dio.get("/v1/hotspots/$hostAddress/rewards",
+          queryParameters: {
+            'max_time': _formatter.format(lastTime),
+            'min_time': _formatter.format(firstTime),
+          },
+          onReceiveProgress: (received, total) => print(
+              'progress: ${(received / total * 100).toStringAsFixed(0)}% ($received/$total)'));
       RewardsResponse hotspotRewardResponse =
           RewardsResponse.fromJson(response.data);
       rewards.addAll(hotspotRewardResponse.data);
