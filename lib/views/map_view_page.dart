@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_helium_api/controllers/map_position_controller.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapViewPage extends StatelessWidget {
   final MapController _mapController = MapController();
+  final MapPositionRxController _mapBoundsRxController =
+      Get.put(MapPositionRxController());
   bool isMapRead = false;
 
   MapViewPage({Key? key}) : super(key: key);
 
   void _onPositionChanged(MapPosition mapPosition, bool isMapRead) {
     // ignore: avoid_print
-    print("onPositionChanged: " +
+    _mapBoundsRxController.setBounds(mapPosition);
+    /*print("onPositionChanged: " +
         mapPosition.bounds!.southWest.toString() +
         " " +
         mapPosition.bounds!.northEast.toString() +
         " " +
-        isMapRead.toString());
+        isMapRead.toString());*/
   }
 
   void _onMapCreated(MapController mapController) {

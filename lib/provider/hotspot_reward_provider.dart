@@ -30,6 +30,7 @@ class HotSpotRewardClient {
             'max_time': _formatter.format(lastTime),
             'min_time': _formatter.format(firstTime),
           },
+          // ignore: avoid_print
           onReceiveProgress: (received, total) => print(
               'progress: ${(received / total * 100).toStringAsFixed(0)}% ($received/$total)'));
       RewardsResponse hotspotRewardResponse =

@@ -1,6 +1,5 @@
 import 'dart:core';
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
 import "package:flutter_helium_api/models/hotspot.dart";
 import "package:flutter_helium_api/models/coordinate_square.dart";
 
@@ -8,7 +7,7 @@ import 'logging_interceptor.dart';
 
 class WebClient {
   final Dio _dio = Dio();
-  double _percentage = 0.0;
+  final double _percentage = 0.0;
 
   //Stream<double> _percentageStream;
 
