@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_helium_api/controllers/map_position_controller.dart';
+import 'package:flutter_helium_api/controllers/hotspot_controller.dart';
+import 'package:flutter_helium_api/widgets/zoombuttons_plugin_option.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapViewPage extends StatelessWidget {
   final MapController _mapController = MapController();
-  final MapPositionRxController _mapBoundsRxController =
-      Get.put(MapPositionRxController());
-  bool isMapRead = false;
+  final HotspotRxController _hotspotRxController =
+      Get.put(HotspotRxController());
 
   MapViewPage({Key? key}) : super(key: key);
 
   void _onPositionChanged(MapPosition mapPosition, bool isMapRead) {
-    // ignore: avoid_print
-    _mapBoundsRxController.setBounds(mapPosition);
-    /*print("onPositionChanged: " +
-        mapPosition.bounds!.southWest.toString() +
-        " " +
-        mapPosition.bounds!.northEast.toString() +
-        " " +
-        isMapRead.toString());*/
+    _hotspotRxController.setBounds(mapPosition);
   }
 
   void _onMapCreated(MapController mapController) {
@@ -34,36 +27,52 @@ class MapViewPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Hotspot locations'),
       ),
-      body: FlutterMap(
-        mapController: _mapController,
-        options: MapOptions(
-          center: LatLng(27.964542, -16.960667),
-          zoom: 8.0,
-          onMapCreated: (m) => _onMapCreated(m),
-          onPositionChanged: (m, b) => _onPositionChanged(m, b),
-        ),
-        layers: [
-          TileLayerOptions(
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c'],
-            attributionBuilder: (_) {
-              return const Text("© OpenStreetMap contributors");
-            },
-          ),
-          MarkerLayerOptions(
-            markers: [
-              Marker(
-                point: LatLng(28.488809, -16.319809),
-                builder: (context) => const Icon(
-                  Icons.signal_cellular_alt,
-                  size: 30,
-                  color: Colors.blueAccent,
-                ),
-              )
+      body: Obx(() => FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              center: LatLng(27.964542, -16.960667),
+              zoom: 10.0,
+              onMapCreated: (m) => _onMapCreated(m),
+              onPositionChanged: (m, b) => _onPositionChanged(m, b),
+              plugins: [
+                ZoomButtonsPlugin(),
+              ],
+            ),
+            layers: [
+              TileLayerOptions(
+                urlTemplate:
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                subdomains: ['a', 'b', 'c'],
+                attributionBuilder: (_) {
+                  return const Text("© OpenStreetMap contributors");
+                },
+              ),
+              MarkerLayerOptions(
+                markers: _hotspotRxController.listHotspot
+                    .map((element) => Marker(
+                          point: LatLng(element.lat, element.lng),
+                          anchorPos: AnchorPos.exactly(Anchor(15, 0)),
+                          builder: (context) => Icon(
+                            Icons.place,
+                            size: 30,
+                            color: element.status.online == "online"
+                                ? Colors.greenAccent[700]
+                                : Colors.redAccent,
+                          ),
+                        ))
+                    .toList(),
+              ),
             ],
-          ),
-        ],
-      ),
+            nonRotatedLayers: [
+              ZoomButtonsPluginOption(
+                minZoom: 4,
+                maxZoom: 19,
+                mini: true,
+                padding: 10,
+                alignment: Alignment.bottomRight,
+              ),
+            ],
+          )),
     );
   }
 }

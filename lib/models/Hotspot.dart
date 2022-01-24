@@ -89,7 +89,7 @@ class Hotspot {
   final double lat;
   final DateTime timestampAdded;
   final Status status;
-  final dynamic rewardScale;
+  final double rewardScale;
   final String payer;
   final String owner;
   final int nonce;
@@ -111,15 +111,15 @@ class Hotspot {
     required double lat,
     required DateTime timestampAdded,
     required Status status,
-    dynamic rewardScale,
+    required double rewardScale,
     required String payer,
     required String owner,
     required int nonce,
     required String name,
     required String mode,
-    dynamic locationHex,
-    dynamic location,
-    dynamic lastPocChallenge,
+    required String locationHex,
+    required String location,
+    required int lastPocChallenge,
     required int lastChangeBlock,
     required Geocode geocode,
     required int gain,
@@ -133,7 +133,7 @@ class Hotspot {
         lat: this.lat,
         timestampAdded: this.timestampAdded,
         status: this.status,
-        rewardScale: rewardScale ?? this.rewardScale,
+        rewardScale: this.rewardScale,
         payer: this.payer,
         owner: this.owner,
         nonce: this.nonce,

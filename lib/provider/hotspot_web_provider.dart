@@ -1,13 +1,17 @@
 import 'dart:core';
 import 'package:dio/dio.dart';
+import 'package:flutter_helium_api/controllers/download_status_controller.dart';
 import "package:flutter_helium_api/models/hotspot.dart";
 import "package:flutter_helium_api/models/coordinate_square.dart";
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 
 import 'logging_interceptor.dart';
 
 class WebClient {
+  final DownloadStatusRxController _downloadStatusRxController =
+      Get.put(DownloadStatusRxController());
   final Dio _dio = Dio();
-  final double _percentage = 0.0;
 
   //Stream<double> _percentageStream;
 
@@ -20,14 +24,22 @@ class WebClient {
   }
 
   Future<Response<dynamic>> get(String url) async {
-    return _dio.get(url,
-        // ignore: avoid_print
-        onReceiveProgress: (received, total) => print(
-            'progress: ${(received / total * 100).toStringAsFixed(0)}% ($received/$total)'));
+    return _dio.get(
+      url,
+      onReceiveProgress: (received, total) {
+        _downloadStatusRxController
+            .setPercentage((received / total * 100).floor());
+        /*
+        print(
+            'progress: ${(received / total * 100).toStringAsFixed(0)}% ($received/$total)');*/
+      },
+    );
   }
 }
 
 class HotSpotClient {
+  final DownloadStatusRxController _downloadStatusRxController =
+      Get.put(DownloadStatusRxController());
   final Dio _dio = Dio();
 
   HotSpotClient() {
@@ -71,10 +83,36 @@ class HotSpotClient {
 
     try {
       Response response = await _dio.get(
-          "/v1/hotspots/location/box/${coordinatesquare.toInlineParams()}");
+        "/v1/hotspots/location/box/${coordinatesquare.toInlineParams()}",
+        onReceiveProgress: (received, total) {
+          _downloadStatusRxController
+              .setPercentage((received / total * 100).floor());
+          /*
+        print(
+            'progress: ${(received / total * 100).toStringAsFixed(0)}% ($received/$total)');*/
+        },
+      );
       ListHotspotResponse listhotspotResponse =
           ListHotspotResponse.fromJson(response.data);
       hotspots.addAll(listhotspotResponse.data);
+
+      while (listhotspotResponse.cursor != "") {
+        response = await _dio.get(
+          "/v1/hotspots/location/box/${coordinatesquare.toInlineParams()}",
+          queryParameters: {
+            'cursor': listhotspotResponse.cursor,
+          },
+          onReceiveProgress: (received, total) {
+            _downloadStatusRxController
+                .setPercentage((received / total * 100).floor());
+            /*
+        print(
+            'progress: ${(received / total * 100).toStringAsFixed(0)}% ($received/$total)');*/
+          },
+        );
+        listhotspotResponse = ListHotspotResponse.fromJson(response.data);
+        hotspots.addAll(listhotspotResponse.data);
+      }
     } on DioError {
       rethrow;
     }

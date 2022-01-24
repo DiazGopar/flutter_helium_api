@@ -36,7 +36,8 @@ dependencies:
   dio: ^4.0.4
   intl: ^0.17.0
   get:
-  flutter_map: ^0.14.0 
+  flutter_map: ^0.14.0
+  sqflite: 
   
 dev_dependencies:
   flutter_test:

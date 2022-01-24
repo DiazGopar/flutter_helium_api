@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_helium_api/provider/hotspot_provider.dart';
-import 'package:flutter_helium_api/provider/hotspot_reward_provider.dart';
+import 'package:flutter_helium_api/provider/hotspot_web_provider.dart';
+import 'package:flutter_helium_api/provider/hotspot_reward_web_provider.dart';
 import 'package:flutter_helium_api/views/map_view_page.dart';
 import 'package:flutter_helium_api/views/rewards_view_page.dart';
 import 'package:get/get.dart';
