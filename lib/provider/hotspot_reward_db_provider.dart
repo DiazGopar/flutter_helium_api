@@ -30,7 +30,7 @@ class RewardsRecord {
   RewardsRecord(this.id, this.account, this.amount, this.block, this.timestamp);
 
   RewardsRecord.fromMap(Map<String, Object?> map) {
-    id = map[columnId];
+    id = map[columnId]!;
     account = map[columnAccount];
     amount = map[columnAmount];
     block = map[columnBlock] ?? 0;
@@ -40,7 +40,7 @@ class RewardsRecord {
 }
 
 class RewardsProvider {
-  Database db;
+  late Database db;
 
   Future open(String path) async {
     db = await openDatabase(path, version: 1,
