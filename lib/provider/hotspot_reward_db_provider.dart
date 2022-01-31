@@ -91,6 +91,32 @@ class RewardsProvider {
     return null;
   }
 
+  Future<List<RewardsRecord>?> getRewardsRecordFromAccount(
+      {required String account, DateTime? startDate, DateTime? endDate}) async {
+    List<RewardsRecord> rewardsRecords = [];
+
+    List<Map<String, dynamic>> maps = await db.query(
+      tableRewards,
+      columns: [
+        columnId,
+        columnAccount,
+        columnAmount,
+        columnBlock,
+        columnTimestamp
+      ],
+      where:
+          '$columnAccount = ? and columnTimestamp >= ? and columTimestamp <= ?',
+      whereArgs: [account, startDate, endDate],
+    );
+
+    for (var element in maps) {
+      var rewardsRecord = RewardsRecord.fromMap(element);
+      rewardsRecords.add(rewardsRecord);
+    }
+
+    return rewardsRecords;
+  }
+
   Future<int> delete(int id) async {
     return await db
         .delete(tableRewards, where: '$columnId = ?', whereArgs: [id]);
