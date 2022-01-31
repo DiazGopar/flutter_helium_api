@@ -8,14 +8,22 @@ const String columnBlock = 'block';
 const String columnTimestamp = 'timestamp';
 
 class RewardsRecord {
-  int id;
-  String account;
-  int amount;
-  int block;
-  DateTime timestamp;
+  final int? id;
+  final String account;
+  final int amount;
+  final int block;
+  final DateTime timestamp;
 
-  Map<String, Object?> toMap() {
-    var map = <String, Object?>{
+  RewardsRecord({
+    this.id,
+    required this.account,
+    required this.amount,
+    required this.block,
+    required this.timestamp,
+  });
+
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
       columnAccount: account,
       columnAmount: amount,
       columnBlock: block,
@@ -27,58 +35,70 @@ class RewardsRecord {
     return map;
   }
 
-  RewardsRecord(this.id, this.account, this.amount, this.block, this.timestamp);
-
-  RewardsRecord.fromMap(Map<String, Object?> map) {
-    id = map[columnId];
-    account = map[columnAccount];
-    amount = map[columnAmount];
-    block = map[columnBlock] ?? 0;
-    timestamp =
-        DateTime.tryParse(map[columnTimestamp].toString()) ?? DateTime(1900);
-  }
+  RewardsRecord.fromMap(Map<String, dynamic> map)
+      : id = map[columnId]?.toInt() ?? 0,
+        account = map[columnAccount] ?? "",
+        amount = map[columnAmount] ?? 0,
+        block = map[columnBlock] ?? 0,
+        timestamp = DateTime.tryParse(map[columnTimestamp].toString()) ??
+            DateTime(1900);
 }
 
 class RewardsProvider {
-  Database db;
+  late Database db;
 
   Future open(String path) async {
-    db = await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
-      await db.execute('''
-create table $tableRewards ( 
-  $columnId integer primary key autoincrement, 
-  $columnAccount text not null,
-  $columnAmount integer not null,
-  $columnBlock integer not null,
-  $columnTimestamp datetime not null)
-''');
-    });
+    db = await openDatabase(
+      path,
+      version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute('''
+          create table $tableRewards ( 
+            $columnId integer primary key autoincrement, 
+            $columnAccount text not null,
+            $columnAmount integer not null,
+            $columnBlock integer not null,
+            $columnTimestamp datetime not null)
+          ''');
+      },
+    );
   }
 
-  Future<RewardsRecord> insert(RewardsRecord reward) async {
-    reward.id = await db.insert(tableRewards, reward.toMap());
-    return reward;
+  Future<int> insert(RewardsRecord reward) async {
+    return await db.insert(
+      tableRewards,
+      reward.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-  Future<Todo> getTodo(int id) async {
-    List<Map> maps = await db.query(tableTodo,
-        columns: [columnId, columnDone, columnTitle],
-        where: '$columnId = ?',
-        whereArgs: [id]);
-    if (maps.length > 0) {
-      return Todo.fromMap(maps.first);
+  Future<RewardsRecord?> getRewardRecord(int id) async {
+    List<Map<String, dynamic>> maps = await db.query(
+      tableRewards,
+      columns: [
+        columnId,
+        columnAccount,
+        columnAmount,
+        columnBlock,
+        columnTimestamp
+      ],
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
+    if (maps.isNotEmpty) {
+      return RewardsRecord.fromMap(maps.first);
     }
     return null;
   }
 
   Future<int> delete(int id) async {
-    return await db.delete(tableTodo, where: '$columnId = ?', whereArgs: [id]);
+    return await db
+        .delete(tableRewards, where: '$columnId = ?', whereArgs: [id]);
   }
 
-  Future<int> update(Todo todo) async {
-    return await db.update(tableTodo, todo.toMap(),
-        where: '$columnId = ?', whereArgs: [todo.id]);
+  Future<int> update(RewardsRecord rewardsRecord) async {
+    return await db.update(tableRewards, rewardsRecord.toMap(),
+        where: '$columnId = ?', whereArgs: [rewardsRecord.id]);
   }
 
   Future close() async => db.close();
